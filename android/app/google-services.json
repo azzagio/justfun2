@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "943099002173",
+    "project_id": "tinder-like-46002",
+    "storage_bucket": "tinder-like-46002.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:943099002173:android:261f9801191e6344321954",
+        "android_client_info": {
+          "package_name": "com.example.myapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "943099002173-v1407f1j2itu1440tv0kravqql5r8tk6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtmFqA-_cphVIK7zgvekRHQAYCztSH278"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "943099002173-v1407f1j2itu1440tv0kravqql5r8tk6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

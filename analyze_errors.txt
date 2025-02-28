@@ -1,0 +1,49 @@
+Analyzing myapp...                                              
+
+   info • Don't use 'BuildContext's across async gaps • lib/screens/auth_screen.dart:47:28 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/screens/auth_screen.dart:230:54 • use_build_context_synchronously
+  error • The name 'Message' isn't a type, so it can't be used as a type argument • lib/screens/chat_screen.dart:52:39 • non_type_as_type_argument
+  error • Undefined class 'Message' • lib/screens/chat_screen.dart:96:21 • undefined_class
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/chat_screen.dart:114:38 • deprecated_member_use
+   info • Don't use 'BuildContext's across async gaps • lib/screens/chat_screen.dart:165:28 • use_build_context_synchronously
+  error • The method 'getUserMatches' isn't defined for the type 'DatabaseService' • lib/screens/matches_screen.dart:24:34 • undefined_method
+  error • A value of type 'String?' can't be assigned to a variable of type 'String' • lib/screens/profile_screen.dart:47:29 • invalid_assignment
+  error • A value of type 'String?' can't be assigned to a variable of type 'String' • lib/screens/profile_screen.dart:49:17 • invalid_assignment
+  error • The getter 'lookingFor' isn't defined for the type 'UserModel' • lib/screens/profile_screen.dart:50:28 • undefined_getter
+   info • Don't use 'BuildContext's across async gaps • lib/screens/profile_screen.dart:52:28 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/screens/profile_screen.dart:73:30 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/screens/profile_screen.dart:92:28 • use_build_context_synchronously
+  error • The named parameter 'email' isn't defined • lib/screens/profile_screen.dart:109:9 • undefined_named_parameter
+  error • The getter 'email' isn't defined for the type 'UserModel' • lib/screens/profile_screen.dart:109:23 • undefined_getter
+  error • The named parameter 'lookingFor' isn't defined • lib/screens/profile_screen.dart:112:9 • undefined_named_parameter
+  error • The named parameter 'interests' isn't defined • lib/screens/profile_screen.dart:117:9 • undefined_named_parameter
+  error • The getter 'interests' isn't defined for the type 'UserModel' • lib/screens/profile_screen.dart:117:27 • undefined_getter
+  error • The named parameter 'likes' isn't defined • lib/screens/profile_screen.dart:118:9 • undefined_named_parameter
+  error • The getter 'likes' isn't defined for the type 'UserModel' • lib/screens/profile_screen.dart:118:23 • undefined_getter
+  error • The named parameter 'dislikes' isn't defined • lib/screens/profile_screen.dart:119:9 • undefined_named_parameter
+  error • The getter 'dislikes' isn't defined for the type 'UserModel' • lib/screens/profile_screen.dart:119:26 • undefined_getter
+  error • The named parameter 'matches' isn't defined • lib/screens/profile_screen.dart:120:9 • undefined_named_parameter
+  error • The getter 'matches' isn't defined for the type 'UserModel' • lib/screens/profile_screen.dart:120:25 • undefined_getter
+  error • The method 'updateUserProfile' isn't defined for the type 'DatabaseService' • lib/screens/profile_screen.dart:123:30 • undefined_method
+   info • Don't use 'BuildContext's across async gaps • lib/screens/profile_screen.dart:125:28 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/screens/profile_screen.dart:129:28 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/screens/profile_screen.dart:141:28 • use_build_context_synchronously
+  error • The property 'isEmpty' can't be unconditionally accessed because the receiver can be 'null' • lib/screens/swipe_screen.dart:66:30 • unchecked_use_of_nullable_value
+  error • The method '[]' can't be unconditionally invoked because the receiver can be 'null' • lib/screens/swipe_screen.dart:71:44 • unchecked_use_of_nullable_value
+  error • The method '[]' can't be unconditionally invoked because the receiver can be 'null' • lib/screens/swipe_screen.dart:72:45 • unchecked_use_of_nullable_value
+  error • The property 'isEmpty' can't be unconditionally accessed because the receiver can be 'null' • lib/screens/swipe_screen.dart:82:25 • unchecked_use_of_nullable_value
+  error • The method '[]' can't be unconditionally invoked because the receiver can be 'null' • lib/screens/swipe_screen.dart:87:36 • unchecked_use_of_nullable_value
+  error • The method '[]' can't be unconditionally invoked because the receiver can be 'null' • lib/screens/swipe_screen.dart:88:37 • unchecked_use_of_nullable_value
+  error • The method 'createUser' isn't defined for the type 'DatabaseService' • lib/services/auth_service.dart:31:30 • undefined_method
+  error • The method 'createUser' isn't defined for the type 'DatabaseService' • lib/services/auth_service.dart:69:32 • undefined_method
+warning • The value of the local variable 'messageRef' isn't used • lib/services/database_service.dart:239:25 • unused_local_variable
+  error • Only static fields can be declared as const • lib/services/storage_service.dart:9:3 • const_instance_field
+   info • Don't invoke 'print' in production code • lib/services/storage_service.dart:34:7 • avoid_print
+  error • Undefined class 'Message' • lib/widgets/message_bubble.dart:7:9 • undefined_class
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/widgets/profile_card.dart:43:32 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/widgets/profile_card.dart:93:36 • deprecated_member_use
+  error • The property 'isNotEmpty' can't be unconditionally accessed because the receiver can be 'null' • lib/widgets/profile_card.dart:117:41 • unchecked_use_of_nullable_value
+  error • The argument type 'String?' can't be assigned to the parameter type 'String'.  • lib/widgets/profile_card.dart:119:25 • argument_type_not_assignable
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/widgets/profile_card.dart:142:52 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • plugins/geolocator_android_fixed/lib/src/types/foreground_settings.dart:122:23 • deprecated_member_use
+
