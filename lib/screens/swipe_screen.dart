@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
-// Importez correctement vos services et modèles
+
 import 'package:simple_dating_app/models/user_model.dart';
-import 'package:simple_dating_app/screens/matches_screen.dart';
+import 'package:simple_dating_app/screens/matches_screen.dart'; // Assurez-vous que ce chemin est correct
 import 'package:simple_dating_app/screens/profile_screen.dart';
 import 'package:simple_dating_app/services/database_service.dart'; // Assurez-vous que ce chemin est correct
 import 'package:simple_dating_app/services/location_service.dart'; // Assurez-vous que ce chemin est correct
@@ -17,12 +17,11 @@ class SwipeScreen extends StatefulWidget {
 }
 
 class _SwipeScreenState extends State<SwipeScreen> {
-  // Instanciez vos services avec le mot-clé final
   final DatabaseService _databaseService = DatabaseService();
   final LocationService _locationService = LocationService();
   final CardSwiperController _cardController = CardSwiperController();
-  
-  bool _isLoading = true;
+
+  bool _isLoading = false;
   List<UserModel> _potentialMatches = [];
   bool _isMatched = false;
   UserModel? _matchedUser;
@@ -34,36 +33,38 @@ class _SwipeScreenState extends State<SwipeScreen> {
     _updateLocationAndLoadMatches();
   }
 
-  // Mise à jour de la localisation et chargement des matchs potentiels
   Future<void> _updateLocationAndLoadMatches() async {
     await _locationService.updateUserLocation();
     _loadPotentialMatches();
   }
 
-  // Chargement des matchs potentiels
   Future<void> _loadPotentialMatches() async {
     setState(() => _isLoading = true);
-    
-    _databaseService.getPotentialMatches().listen((users) {
+
+    _databaseService.getPotentialMatches().listen((List<UserModel> users) {
       _filterMatchesByDistance(users).then((filteredUsers) {
         setState(() {
           _potentialMatches = filteredUsers;
           _isLoading = false;
         });
+      }).catchError((error) {
+          debugPrint('Error filtering matches: $error');
+          setState(() => _isLoading = false);
       });
+    }).onError((error) {
+          debugPrint('Error getting matches: $error');
+          setState(() => _isLoading = false);
     });
   }
 
-  // Filtrage des matchs selon la distance
   Future<List<UserModel>> _filterMatchesByDistance(List<UserModel> users) async {
-    // Si distance maximale est 0 ou négative, pas de filtrage
     if (_maxDistance <= 0) return users;
-    
-    // Obtenir l'utilisateur actuel avec sa localisation
+
     final currentUser = await _databaseService.getCurrentUser();
-    
-    // Vérifier si la localisation existe, pas besoin de vérifier null car Map ne peut pas être null
-    if (currentUser.location.isEmpty) {
+
+    final userLocation = currentUser.location;
+
+    if (userLocation.isEmpty) {
       return users;
     }
     
@@ -76,14 +77,12 @@ class _SwipeScreenState extends State<SwipeScreen> {
       return users;
     }
     
-    // Filtrer les utilisateurs par distance
-    return users.where((user) {
-      // Vérifier si l'autre utilisateur a une localisation valide
+    return users.where((UserModel user) {
       if (user.location.isEmpty) {
         return false;
       }
-      
-      // Récupérer les coordonnées de l'utilisateur
+
+
       final userLat = user.location['latitude'] as double?;
       final userLong = user.location['longitude'] as double?;
       
@@ -91,17 +90,16 @@ class _SwipeScreenState extends State<SwipeScreen> {
       if (userLat == null || userLong == null) {
         return false;
       }
-      
-      // Calculer la distance entre les deux utilisateurs
-      double distance = _locationService.calculateDistance(
-        currentLat, 
-        currentLong,
-        userLat,
-        userLong
+
+      final double distance = _locationService.calculateDistance(
+          currentLat,
+          currentLong,
+          userLat,
+          userLong
       );
       
-      // Conserver l'utilisateur s'il est dans le rayon défini
       return distance <= _maxDistance;
+
     }).toList();
   }
 
@@ -131,7 +129,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
     _cardController.swipe();
   }
 
-  // Fermeture de la boîte de dialogue de match
+
   void _closeMatchDialog() {
     setState(() {
       _isMatched = false;
@@ -204,7 +202,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
                         },
                       ),
                     ),
-                    
+
           // Dialog de match
           if (_isMatched && _matchedUser != null)
             Container(
@@ -307,12 +305,12 @@ class _SwipeScreenState extends State<SwipeScreen> {
       bottomNavigationBar: !_isLoading && _potentialMatches.isNotEmpty
           ? Container(
               padding: const EdgeInsets.only(
-                left: 32.0, 
-                right: 32.0, 
-                bottom: 16.0, 
-                top: 60.0  // Espace pour le bottomSheet
+                left: 32.0,
+                right: 32.0,
+                bottom: 16.0,
+                top: 60.0 // Espace pour le bottomSheet
               ),
-              child: Row(
+              child: const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   FloatingActionButton(

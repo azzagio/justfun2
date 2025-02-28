@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 class StorageService {
@@ -31,9 +32,7 @@ class StorageService {
       await _storage.refFromURL(imageUrl).delete();
     } catch (e) {
       // Utiliser print temporairement (à remplacer par un logger en production)
-      print('Error deleting image: $e');
-      // OU utiliser debugPrint si vous voulez le garder pour le développement :
-      // debugPrint('Error deleting image: $e');
+      debugPrint('Error deleting image: $e');
     }
   }
 }

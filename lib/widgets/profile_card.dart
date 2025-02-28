@@ -5,10 +5,7 @@ import 'package:simple_dating_app/models/user_model.dart';
 class ProfileCard extends StatefulWidget {
   final UserModel user;
 
-  const ProfileCard({
-    Key? key,
-    required this.user,
-  }) : super(key: key);
+  const ProfileCard({Key? key, required this.user}) : super(key: key);
 
   @override
   State<ProfileCard> createState() => _ProfileCardState();
@@ -18,15 +15,15 @@ class _ProfileCardState extends State<ProfileCard> {
   int _currentPhotoIndex = 0;
 
   void _nextPhoto() {
-    if (widget.user.photos?.isNotEmpty ?? false) {
+    if (widget.user.photos != null && widget.user.photos!.isNotEmpty) {
       setState(() {
-        _currentPhotoIndex = (_currentPhotoIndex + 1) % (widget.user.photos!.length);
+        _currentPhotoIndex = (_currentPhotoIndex + 1) % widget.user.photos!.length;
       });
     }
   }
 
   void _previousPhoto() {
-    if (widget.user.photos?.isNotEmpty ?? false) {
+    if (widget.user.photos != null && widget.user.photos!.isNotEmpty) {
       setState(() {
         _currentPhotoIndex = (_currentPhotoIndex - 1 + widget.user.photos!.length) % widget.user.photos!.length;
       });
@@ -40,7 +37,7 @@ class _ProfileCardState extends State<ProfileCard> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.3),
+            color: Colors.grey.withOpacity(0.3),
             spreadRadius: 2,
             blurRadius: 5,
             offset: const Offset(0, 3),
@@ -52,7 +49,7 @@ class _ProfileCardState extends State<ProfileCard> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            if (widget.user.photos?.isEmpty ?? true) // Simplifié avec ?? true
+            if (widget.user.photos == null || widget.user.photos!.isEmpty)
               Container(
                 color: Colors.grey[300],
                 child: const Icon(Icons.person, size: 100, color: Colors.grey),
@@ -68,11 +65,11 @@ class _ProfileCardState extends State<ProfileCard> {
                   }
                 },
                 child: CachedNetworkImage(
-                  imageUrl: widget.user.photos![_currentPhotoIndex] ?? 'https://via.placeholder.com/150', // Gestion de null avec valeur par défaut
+                  imageUrl: widget.user.photos!.isNotEmpty
+                      ? widget.user.photos![_currentPhotoIndex]
+                      : 'https://via.placeholder.com/150',
                   fit: BoxFit.cover,
-                  placeholder: (context, url) => const Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                  placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
                   errorWidget: (context, url, error) => Container(
                     color: Colors.grey[300],
                     child: const Icon(Icons.error, size: 100, color: Colors.red),
@@ -90,7 +87,7 @@ class _ProfileCardState extends State<ProfileCard> {
                     begin: Alignment.bottomCenter,
                     end: Alignment.topCenter,
                     colors: [
-                      Colors.black.withValues(alpha: 0.8),
+                      Colors.black.withOpacity(0.8),
                       Colors.transparent,
                     ],
                   ),
@@ -99,32 +96,23 @@ class _ProfileCardState extends State<ProfileCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            '${widget.user.name}, ${widget.user.age}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
+                    Text(
+                      '${widget.user.name}, ${widget.user.age ?? "N/A"}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 8),
-                    if (widget.user.bio.isNotEmpty)
+                    if (widget.user.bio != null && widget.user.bio!.isNotEmpty)
                       Text(
-                        widget.user.bio,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
+                        widget.user.bio!,
+                        style: const TextStyle(color: Colors.white, fontSize: 16),
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                       ),
-                    if ((widget.user.photos?.isNotEmpty ?? false) && (widget.user.photos!.length > 1))
+                    if (widget.user.photos != null && widget.user.photos!.length > 1)
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Row(
@@ -137,9 +125,7 @@ class _ProfileCardState extends State<ProfileCard> {
                               margin: const EdgeInsets.symmetric(horizontal: 2),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: index == _currentPhotoIndex
-                                    ? Colors.white
-                                    : Colors.white.withValues(alpha: 0.4),
+                                color: index == _currentPhotoIndex ? Colors.white : Colors.white.withOpacity(0.4),
                               ),
                             ),
                           ),
