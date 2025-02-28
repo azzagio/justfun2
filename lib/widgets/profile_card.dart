@@ -4,7 +4,7 @@ import 'package:simple_dating_app/models/user_model.dart';
 
 class ProfileCard extends StatefulWidget {
   final UserModel user;
-  
+
   const ProfileCard({
     Key? key,
     required this.user,
@@ -18,17 +18,17 @@ class _ProfileCardState extends State<ProfileCard> {
   int _currentPhotoIndex = 0;
 
   void _nextPhoto() {
-    if (widget.user.photos.isNotEmpty) {
+    if (widget.user.photos?.isNotEmpty ?? false) {
       setState(() {
-        _currentPhotoIndex = (_currentPhotoIndex + 1) % widget.user.photos.length;
+        _currentPhotoIndex = (_currentPhotoIndex + 1) % (widget.user.photos!.length);
       });
     }
   }
 
   void _previousPhoto() {
-    if (widget.user.photos.isNotEmpty) {
+    if (widget.user.photos?.isNotEmpty ?? false) {
       setState(() {
-        _currentPhotoIndex = (_currentPhotoIndex - 1 + widget.user.photos.length) % widget.user.photos.length;
+        _currentPhotoIndex = (_currentPhotoIndex - 1 + widget.user.photos!.length) % widget.user.photos!.length;
       });
     }
   }
@@ -40,7 +40,7 @@ class _ProfileCardState extends State<ProfileCard> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
+            color: Colors.grey.withValues(alpha: 0.3),
             spreadRadius: 2,
             blurRadius: 5,
             offset: const Offset(0, 3),
@@ -52,7 +52,7 @@ class _ProfileCardState extends State<ProfileCard> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            if (widget.user.photos.isEmpty)
+            if (widget.user.photos?.isEmpty ?? true) // Simplifié avec ?? true
               Container(
                 color: Colors.grey[300],
                 child: const Icon(Icons.person, size: 100, color: Colors.grey),
@@ -68,7 +68,7 @@ class _ProfileCardState extends State<ProfileCard> {
                   }
                 },
                 child: CachedNetworkImage(
-                  imageUrl: widget.user.photos[_currentPhotoIndex],
+                  imageUrl: widget.user.photos![_currentPhotoIndex] ?? 'https://via.placeholder.com/150', // Gestion de null avec valeur par défaut
                   fit: BoxFit.cover,
                   placeholder: (context, url) => const Center(
                     child: CircularProgressIndicator(),
@@ -90,7 +90,7 @@ class _ProfileCardState extends State<ProfileCard> {
                     begin: Alignment.bottomCenter,
                     end: Alignment.topCenter,
                     colors: [
-                      Colors.black.withOpacity(0.8),
+                      Colors.black.withValues(alpha: 0.8),
                       Colors.transparent,
                     ],
                   ),
@@ -124,13 +124,13 @@ class _ProfileCardState extends State<ProfileCard> {
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                       ),
-                    if (widget.user.photos.isNotEmpty && widget.user.photos.length > 1)
+                    if ((widget.user.photos?.isNotEmpty ?? false) && (widget.user.photos!.length > 1))
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: List.generate(
-                            widget.user.photos.length,
+                            widget.user.photos!.length,
                             (index) => Container(
                               width: 8,
                               height: 8,
@@ -139,7 +139,7 @@ class _ProfileCardState extends State<ProfileCard> {
                                 shape: BoxShape.circle,
                                 color: index == _currentPhotoIndex
                                     ? Colors.white
-                                    : Colors.white.withOpacity(0.4),
+                                    : Colors.white.withValues(alpha: 0.4),
                               ),
                             ),
                           ),
