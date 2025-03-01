@@ -1,9 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_dating_app/models/user_model.dart';
-import 'package:simple_dating_app/screens/chat_screen.dart';
 import 'package:simple_dating_app/services/auth_service.dart';
 import 'package:simple_dating_app/services/database_service.dart';
+import 'package:simple_dating_app/screens/chat_screen.dart';
 
 class MatchesScreen extends StatefulWidget {
   const MatchesScreen({Key? key}) : super(key: key);
@@ -13,83 +12,61 @@ class MatchesScreen extends StatefulWidget {
 }
 
 class _MatchesScreenState extends State<MatchesScreen> {
-    final AuthService _authService = AuthService();
+  final AuthService _authService = AuthService();
   final DatabaseService _databaseService = DatabaseService();
-  
+  List<UserModel> _matches = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMatches();
+  }
+
+  Future<void> _loadMatches() async {
+    final String? userId = _authService.currentUser?.uid;
+    if (userId == null) {
+      debugPrint('No user logged in');
+      return;
+    }
+    _databaseService.getMatches().listen((matches) async {
+      final List<UserModel> userMatches = [];
+      for (final match in matches) {
+        // À ajuster selon la structure réelle de MatchModel et DatabaseService
+        // Hypothèse temporaire : match contient un ID utilisateur
+        final user = await _databaseService.getUser(match.matchedUserId); // Remplace matchedUserId par le bon champ
+        if (user != null) {
+          userMatches.add(user);
+        }
+      }
+      setState(() {
+        _matches = userMatches;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Your Matches'),
+        title: const Text('Matches'),
       ),
-      body: StreamBuilder<List<UserModel>>(
-        stream: _databaseService.getUserMatches(userId: _authService.getCurrentUserId()),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.favorite_border, size: 80, color: Colors.grey),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'No matches yet',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Keep swiping to find your match!',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Continue Swiping'),
-                  ),
-                ],
-              ),
-            );
-          }
-          
-          return ListView.builder(
-            padding: const EdgeInsets.all(8.0),
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              UserModel match = snapshot.data![index];
-              
-              return Card(
-                margin: const EdgeInsets.symmetric(vertical: 8.0),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    radius: 30,
-                    backgroundImage: match.photos.isNotEmpty
-                        ? CachedNetworkImageProvider(match.photos.first)
-                        : null,
-                    child: match.photos.isEmpty
-                        ? const Icon(Icons.person)
-                        : null,
-                  ),
-                  title: Text(match.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text('${match.age} years old'),
-                  trailing: const Icon(Icons.message),
+      body: _matches.isEmpty
+          ? const Center(child: Text('No matches yet'))
+          : ListView.builder(
+              itemCount: _matches.length,
+              itemBuilder: (context, index) {
+                final match = _matches[index];
+                return ListTile(
+                  title: Text(match.name),
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => ChatScreen(match: match),
-                      ),
+                      MaterialPageRoute(builder: (context) => ChatScreen()),
                     );
                   },
-                ),
-              );
-            },
-          );
-        },
-      ),
+                );
+              },
+            ),
     );
   }
 }

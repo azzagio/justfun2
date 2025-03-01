@@ -2,6 +2,24 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_dating_app/models/user_model.dart';
 
+class ProfileScreen extends StatelessWidget {
+  final UserModel user;
+
+  const ProfileScreen({Key? key, required this.user}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('${user.name}\'s Profile'),
+      ),
+      body: Center(
+        child: ProfileCard(user: user),
+      ),
+    );
+  }
+}
+
 class ProfileCard extends StatefulWidget {
   final UserModel user;
 
@@ -20,7 +38,7 @@ class _ProfileCardState extends State<ProfileCard> {
   void _nextPhoto() {
     if (widget.user.photos?.isNotEmpty ?? false) {
       setState(() {
-        _currentPhotoIndex = (_currentPhotoIndex + 1) % (widget.user.photos!.length);
+        _currentPhotoIndex = (_currentPhotoIndex + 1) % widget.user.photos.length;
       });
     }
   }
@@ -28,7 +46,7 @@ class _ProfileCardState extends State<ProfileCard> {
   void _previousPhoto() {
     if (widget.user.photos?.isNotEmpty ?? false) {
       setState(() {
-        _currentPhotoIndex = (_currentPhotoIndex - 1 + widget.user.photos!.length) % widget.user.photos!.length;
+        _currentPhotoIndex = (_currentPhotoIndex - 1 + widget.user.photos.length) % widget.user.photos.length;
       });
     }
   }
@@ -52,7 +70,7 @@ class _ProfileCardState extends State<ProfileCard> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            if (widget.user.photos?.isEmpty ?? true) // Simplifié avec ?? true
+            if (widget.user.photos?.isEmpty ?? true)
               Container(
                 color: Colors.grey[300],
                 child: const Icon(Icons.person, size: 100, color: Colors.grey),
@@ -68,7 +86,9 @@ class _ProfileCardState extends State<ProfileCard> {
                   }
                 },
                 child: CachedNetworkImage(
-                  imageUrl: widget.user.photos![_currentPhotoIndex] ?? 'https://via.placeholder.com/150', // Gestion de null avec valeur par défaut
+                  imageUrl: widget.user.photos.isNotEmpty
+                      ? widget.user.photos[_currentPhotoIndex]
+                      : 'https://via.placeholder.com/150',
                   fit: BoxFit.cover,
                   placeholder: (context, url) => const Center(
                     child: CircularProgressIndicator(),
@@ -103,7 +123,7 @@ class _ProfileCardState extends State<ProfileCard> {
                       children: [
                         Expanded(
                           child: Text(
-                            '${widget.user.name}, ${widget.user.age}',
+                            '${widget.user.name}, ${widget.user.age ?? "N/A"}',
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 24,
@@ -114,9 +134,9 @@ class _ProfileCardState extends State<ProfileCard> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    if (widget.user.bio.isNotEmpty)
+                    if (widget.user.bio?.isNotEmpty ?? false)
                       Text(
-                        widget.user.bio,
+                        widget.user.bio ?? '',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
@@ -124,13 +144,13 @@ class _ProfileCardState extends State<ProfileCard> {
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                       ),
-                    if ((widget.user.photos?.isNotEmpty ?? false) && (widget.user.photos!.length > 1))
+                    if (widget.user.photos.isNotEmpty && widget.user.photos.length > 1)
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: List.generate(
-                            widget.user.photos!.length,
+                            widget.user.photos.length,
                             (index) => Container(
                               width: 8,
                               height: 8,
