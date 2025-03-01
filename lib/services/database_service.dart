@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import '../models/user_model.dart';
+import '../models/match_model.dart'; // Ajouté
+import '../models/message_model.dart'; // Ajouté
 
 class DatabaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -204,7 +206,7 @@ class DatabaseService {
           List<MatchModel> matches = [];
 
           for (var doc in matchesSnapshot.docs) {
-            String matchedUserId = doc.data()['matchedUserId'];
+            String matchedUserId = doc.data()['matchedUserId'] as String;
 
             // Obtener les informations de l'utilisateur matché
             DocumentSnapshot userDoc = await _firestore
@@ -240,19 +242,19 @@ class DatabaseService {
         .collection('matches')
         .snapshots()
         .asyncMap((matchesSnapshot) async {
-      List<UserModel> matches = [];
-      for (var doc in matchesSnapshot.docs) {
-        String matchedUserId = doc.data()['matchedUserId'] as String;
-        DocumentSnapshot userDoc = await _firestore
-            .collection('users')
-            .doc(matchedUserId)
-            .get();
-        if (userDoc.exists) {
-          matches.add(UserModel.fromDocument(userDoc));
-        }
-      }
-      return matches;
-    });
+          List<UserModel> matches = [];
+          for (var doc in matchesSnapshot.docs) {
+            String matchedUserId = doc.data()['matchedUserId'] as String;
+            DocumentSnapshot userDoc = await _firestore
+                .collection('users')
+                .doc(matchedUserId)
+                .get();
+            if (userDoc.exists) {
+              matches.add(UserModel.fromDocument(userDoc));
+            }
+          }
+          return matches;
+        });
   }
 
   // Envoyer un message

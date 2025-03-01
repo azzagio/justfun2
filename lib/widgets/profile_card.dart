@@ -15,17 +15,17 @@ class _ProfileCardState extends State<ProfileCard> {
   int _currentPhotoIndex = 0;
 
   void _nextPhoto() {
-    if (widget.user.photos != null && widget.user.photos!.isNotEmpty) {
+    if (widget.user.photos.isNotEmpty) {
       setState(() {
-        _currentPhotoIndex = (_currentPhotoIndex + 1) % widget.user.photos!.length;
+        _currentPhotoIndex = (_currentPhotoIndex + 1) % widget.user.photos.length;
       });
     }
   }
 
   void _previousPhoto() {
-    if (widget.user.photos != null && widget.user.photos!.isNotEmpty) {
+    if (widget.user.photos.isNotEmpty) {
       setState(() {
-        _currentPhotoIndex = (_currentPhotoIndex - 1 + widget.user.photos!.length) % widget.user.photos!.length;
+        _currentPhotoIndex = (_currentPhotoIndex - 1 + widget.user.photos.length) % widget.user.photos.length;
       });
     }
   }
@@ -49,7 +49,7 @@ class _ProfileCardState extends State<ProfileCard> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            if (widget.user.photos == null || widget.user.photos!.isEmpty)
+            if (widget.user.photos.isEmpty)
               Container(
                 color: Colors.grey[300],
                 child: const Icon(Icons.person, size: 100, color: Colors.grey),
@@ -65,8 +65,8 @@ class _ProfileCardState extends State<ProfileCard> {
                   }
                 },
                 child: CachedNetworkImage(
-                  imageUrl: widget.user.photos!.isNotEmpty
-                      ? widget.user.photos![_currentPhotoIndex]
+                  imageUrl: widget.user.photos.isNotEmpty
+                      ? widget.user.photos[_currentPhotoIndex]
                       : 'https://via.placeholder.com/150',
                   fit: BoxFit.cover,
                   placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
@@ -112,13 +112,13 @@ class _ProfileCardState extends State<ProfileCard> {
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                       ),
-                    if (widget.user.photos != null && widget.user.photos!.length > 1)
+                    if (widget.user.photos.length > 1)
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: List.generate(
-                            widget.user.photos!.length,
+                            widget.user.photos.length,
                             (index) => Container(
                               width: 8,
                               height: 8,

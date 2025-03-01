@@ -14,39 +14,44 @@ class _AuthScreenState extends State<AuthScreen> {
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
   final _ageController = TextEditingController();
-  
+
   bool _isLogin = true;
   bool _isLoading = false;
   String _gender = 'male';
   String _lookingFor = 'female';
 
   final AuthService _authService = AuthService();
-  
+
   void _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     setState(() => _isLoading = true);
-    
+
     try {
       if (_isLogin) {
         await _authService.signInWithEmail(
           _emailController.text,
-          _passwordController.text
+          _passwordController.text,
         );
       } else {
+        List<String>? lookingForList = _lookingFor == 'both'
+            ? ['male', 'female']
+            : _lookingFor != null ? [_lookingFor] : null;
         await _authService.registerWithEmail(
           _emailController.text,
           _passwordController.text,
           _nameController.text,
           int.parse(_ageController.text),
           _gender,
-          _lookingFor
+          lookingForList,
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString()))
-      );
+      if (mounted) { // Vérification mounted
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -227,9 +232,11 @@ class _AuthScreenState extends State<AuthScreen> {
                               try {
                                 await _authService.signInWithGoogle();
                               } catch (e) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(e.toString())),
-                                );
+                                if (mounted) { // Vérification mounted
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(e.toString())),
+                                  );
+                                }
                               } finally {
                                 if (mounted) {
                                   setState(() => _isLoading = false);

@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 
 import 'package:simple_dating_app/models/user_model.dart';
-import 'package:simple_dating_app/screens/matches_screen.dart'; // Assurez-vous que ce chemin est correct
-import 'package:simple_dating_app/screens/profile_screen.dart';
-import 'package:simple_dating_app/services/database_service.dart'; // Assurez-vous que ce chemin est correct
-import 'package:simple_dating_app/services/location_service.dart'; // Assurez-vous que ce chemin est correct
+import 'package:simple_dating_app/screens/matches_screen.dart';
+import 'package:simple_dating_app/screens/profile_screen.dart'; // Import the ProfileScreen class
+import 'package:simple_dating_app/services/database_service.dart';
+import 'package:simple_dating_app/services/location_service.dart';
 import 'package:simple_dating_app/widgets/profile_card.dart';
 
 class SwipeScreen extends StatefulWidget {
@@ -25,7 +25,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
   List<UserModel> _potentialMatches = [];
   bool _isMatched = false;
   UserModel? _matchedUser;
-  double _maxDistance = 50.0; // Distance maximale en km (paramètre par défaut)
+  double _maxDistance = 50.0;
 
   @override
   void initState() {
@@ -48,12 +48,12 @@ class _SwipeScreenState extends State<SwipeScreen> {
           _isLoading = false;
         });
       }).catchError((error) {
-          debugPrint('Error filtering matches: $error');
-          setState(() => _isLoading = false);
+        debugPrint('Error filtering matches: $error');
+        setState(() => _isLoading = false);
       });
     }).onError((error) {
-          debugPrint('Error getting matches: $error');
-          setState(() => _isLoading = false);
+      debugPrint('Error getting matches: $error');
+      setState(() => _isLoading = false);
     });
   }
 
@@ -61,57 +61,48 @@ class _SwipeScreenState extends State<SwipeScreen> {
     if (_maxDistance <= 0) return users;
 
     final currentUser = await _databaseService.getCurrentUser();
-
     final userLocation = currentUser.location;
 
-    if (userLocation.isEmpty) {
+    if (userLocation == null) {
       return users;
     }
-    
-    // Récupérer les coordonnées de l'utilisateur courant
-    final currentLat = currentUser.location['latitude'] as double?;
-    final currentLong = currentUser.location['longitude'] as double?;
-    
-    // Si les coordonnées ne sont pas disponibles, retourner tous les utilisateurs
-    if (currentLat == null || currentLong == null) {
+
+    final double currentLat = userLocation.latitude;
+    final double currentLong = userLocation.longitude;
+
+    if (currentLong == null) {
       return users;
     }
-    
+
     return users.where((UserModel user) {
-      if (user.location.isEmpty) {
+      if (user.location == null) {
         return false;
       }
 
+      final double userLat = user.location!.latitude;
+      final double userLong = user.location!.longitude;
 
-      final userLat = user.location['latitude'] as double?;
-      final userLong = user.location['longitude'] as double?;
-      
-      // Si les coordonnées ne sont pas disponibles, exclure cet utilisateur
-      if (userLat == null || userLong == null) {
+      if (userLong == null) {
         return false;
       }
 
       final double distance = _locationService.calculateDistance(
-          currentLat,
-          currentLong,
-          userLat,
-          userLong
+        currentLat,
+        currentLong,
+        userLat,
+        userLong,
       );
-      
-      return distance <= _maxDistance;
 
+      return distance <= _maxDistance;
     }).toList();
   }
 
-  // Gestion du swipe manuel
   void _handleSwipe(CardSwiperDirection direction) {
-    // Vérifier qu'il y a des profils à traiter
     if (_potentialMatches.isEmpty) return;
-    
+
     UserModel swipedUser = _potentialMatches[0];
-    
+
     if (direction == CardSwiperDirection.right) {
-      // Like l'utilisateur et vérifier s'il y a match
       _databaseService.likeUser(swipedUser.id).then((isMatch) {
         if (isMatch) {
           setState(() {
@@ -121,14 +112,11 @@ class _SwipeScreenState extends State<SwipeScreen> {
         }
       });
     } else if (direction == CardSwiperDirection.left) {
-      // Dislike l'utilisateur
       _databaseService.dislikeUser(swipedUser.id);
     }
-    
-    // Passer à la carte suivante
+
     _cardController.swipe();
   }
-
 
   void _closeMatchDialog() {
     setState(() {
@@ -143,7 +131,6 @@ class _SwipeScreenState extends State<SwipeScreen> {
       appBar: AppBar(
         title: const Text('Find Matches'),
         actions: [
-          // Bouton pour rafraîchir la localisation
           IconButton(
             icon: const Icon(Icons.location_on),
             onPressed: _updateLocationAndLoadMatches,
@@ -163,7 +150,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const MatchesScreen()),
+                MaterialPageRoute(builder: (context) => MatchesScreen()),
               );
             },
           ),
@@ -171,7 +158,6 @@ class _SwipeScreenState extends State<SwipeScreen> {
       ),
       body: Stack(
         children: [
-          // Affichage des profils ou message de chargement/vide
           _isLoading
               ? const Center(child: CircularProgressIndicator())
               : _potentialMatches.isEmpty
@@ -198,12 +184,11 @@ class _SwipeScreenState extends State<SwipeScreen> {
                         cardsCount: _potentialMatches.length,
                         numberOfCardsDisplayed: 1,
                         cardBuilder: (context, index) {
+                          if (_potentialMatches.isEmpty) return Container();
                           return ProfileCard(user: _potentialMatches[index]);
                         },
                       ),
                     ),
-
-          // Dialog de match
           if (_isMatched && _matchedUser != null)
             Container(
               color: Colors.black54,
@@ -248,7 +233,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => const MatchesScreen(),
+                                      builder: (context) => MatchesScreen(),
                                     ),
                                   );
                                 },
@@ -272,7 +257,6 @@ class _SwipeScreenState extends State<SwipeScreen> {
             ),
         ],
       ),
-      // Section pour ajuster la distance maximale
       bottomSheet: Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         color: Theme.of(context).scaffoldBackgroundColor,
@@ -301,16 +285,15 @@ class _SwipeScreenState extends State<SwipeScreen> {
           ],
         ),
       ),
-      // Boutons de swipe
       bottomNavigationBar: !_isLoading && _potentialMatches.isNotEmpty
           ? Container(
               padding: const EdgeInsets.only(
                 left: 32.0,
                 right: 32.0,
                 bottom: 16.0,
-                top: 60.0 // Espace pour le bottomSheet
+                top: 60.0,
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   FloatingActionButton(
@@ -328,7 +311,8 @@ class _SwipeScreenState extends State<SwipeScreen> {
                 ],
               ),
             )
-          : const SizedBox(height: 80), // Hauteur réservée quand pas de boutons
+          : const SizedBox(height: 80),
     );
   }
 }
+

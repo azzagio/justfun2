@@ -1,29 +1,39 @@
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
+plugins {
+    id("com.android.application") // Version déjà définie dans settings.gradle.kts
+    id("kotlin-android") // Version déjà définie dans settings.gradle.kts
+    id("com.google.gms.google-services") version "4.4.2" // Ajoute la version ici
+    id("dev.flutter.flutter-gradle-plugin")
+}
+
+android {
+    namespace = "com.example.myapp"
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = "27.0.12077973"
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
+    defaultConfig {
+        applicationId = "com.example.myapp"
+        minSdk = flutter.minSdkVersion
+        targetSdk = flutter.targetSdkVersion
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
+    }
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("debug")
+        }
     }
 }
 
-val newBuildDir: Directory = rootProject.layout.buildDirectory.dir("../../build").get()
-rootProject.layout.buildDirectory.value(newBuildDir)
-
-subprojects {
-    val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
-    project.layout.buildDirectory.value(newSubprojectBuildDir)
+flutter {
+    source = "../.."
 }
-subprojects {
-    project.evaluationDependsOn(":app")
-}
-
-tasks.register<Delete>("clean") {
-    delete(rootProject.layout.buildDirectory)
-}
-
-buildscript {
-  dependencies {
-    // ...
-    classpath 'com.google.gms:google-services:4.3.15'
-  }
-}
-
